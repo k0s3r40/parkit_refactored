@@ -4,7 +4,22 @@ body{
 .card{
     background-color: darkgray !important;
 }
-.form-control:focus {
+.form-control:focus,
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:visited {
+  border-color: #000000 !important;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.6) !important;
+}
+
+.btn-primary {
+  background-color: #000000;
   border-color: #000000;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+}
+
+.btn-primary:active {
+  border-color: #000000;  /* Change the border color when the button is active */
 }
