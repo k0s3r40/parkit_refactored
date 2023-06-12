@@ -16,3 +16,4 @@ class Camera(models.Model):
     violator_mask = models.MultiPolygonField()
     max_cap = models.PositiveIntegerField(default=0)
     current_cap = models.IntegerField(default=0)
+    organization = models.ForeignKey('users.Organization', blank=False, null=False, on_delete=models.PROTECT)
