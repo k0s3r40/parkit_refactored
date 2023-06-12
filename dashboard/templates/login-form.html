@@ -1,0 +1,72 @@
+{% extends 'home.html' %}
+{% block content %}
+    <div class="row m-auto" style="min-height: 100vh">
+        <div class="col-lg-4 col-md-6 col-sm-8 mx-auto">
+            <form class="form" method="POST" action="#">
+                {% csrf_token %}
+                <div class="card card-login">
+                    <div class="card-header card-header-rose text-center">
+                        <h4 class="card-title">Вход</h4>
+                    </div>
+                    <div class="card-body ">
+                    <span class="bmd-form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <i class="material-icons">email</i>
+                        </span>
+                      </div>
+                      <input type="email" required placeholder="Имейл"
+                             name="email"
+                             id="inputEmail"
+                             class="form-control"
+                             autofocus=""
+                             oninvalid="this.setCustomValidity('Моля въведете валиден имейл адрес')"
+                             onchange="try{setCustomValidity('')}catch(e){}"
+                             oninput="setCustomValidity(' ')"
+                             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
+                    </div>
+                  </span>
+                        <span class="bmd-form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <i class="material-icons">lock_outline</i>
+                        </span>
+                      </div>
+                      <input type="password" name="password" required class="form-control" placeholder="Парола">
+                    </div>
+                  </span>
+                    </div>
+                    <div class="card-footer justify-content-center flex-column text-center">
+                        <button type="submit" class="btn button btn-primary mx-auto">Продължи</button>
+                        <a class="small" href="#">Забравена парола</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $('#login_nav_link').addClass('active');
+    </script>
+    <script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1059592494913916',
+      xfbml      : true,
+      version    : 'v13.0'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+{% endblock %}

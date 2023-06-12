@@ -8,6 +8,8 @@ default:
       PASSWORD: '123'
       HOST: 'localhost'
       PORT: '5432'
+  ALLOWED_HOSTS:
+    - '*'
 
 development:
   DEBUG: True
