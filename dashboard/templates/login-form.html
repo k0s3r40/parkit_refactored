@@ -1,25 +1,31 @@
 {% extends 'home.html' %}
+
 {% block content %}
-    <div class="row m-auto" style="min-height: 100vh">
-        <div class="col-lg-4 col-md-6 col-sm-8 mx-auto">
+<style>
+.card{
+    color: black;
+}
+</style>
+    <div class="row m-auto ">
+        <div class="col-lg-4 col-md-6 col-sm-8 mx-auto pt-5">
             <form class="form" method="POST" action="#">
                 {% csrf_token %}
-                <div class="card card-login">
-                    <div class="card-header card-header-rose text-center">
-                        <h4 class="card-title">Вход</h4>
+                <div class="card card-login bg-dark">
+                    <div class="card-header card-header-rose text-center bg-dark">
+                        <h4 class="card-title text-white">Вход</h4>
                     </div>
                     <div class="card-body ">
                     <span class="bmd-form-group">
-                    <div class="input-group">
+                    <div class="input-group mb-2">
                       <div class="input-group-prepend">
-                        <span class="input-group-text">
-                          <i class="material-icons">email</i>
+                        <span class="input-group-text bg-dark">
+                          <i class="material-icons text-white">email</i>
                         </span>
                       </div>
                       <input type="email" required placeholder="Имейл"
                              name="email"
                              id="inputEmail"
-                             class="form-control"
+                             class="form-control "
                              autofocus=""
                              oninvalid="this.setCustomValidity('Моля въведете валиден имейл адрес')"
                              onchange="try{setCustomValidity('')}catch(e){}"
@@ -30,8 +36,8 @@
                         <span class="bmd-form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text">
-                          <i class="material-icons">lock_outline</i>
+                        <span class="input-group-text bg-dark">
+                          <i class="material-icons text-white">lock_outline</i>
                         </span>
                       </div>
                       <input type="password" name="password" required class="form-control" placeholder="Парола">
@@ -39,8 +45,7 @@
                   </span>
                     </div>
                     <div class="card-footer justify-content-center flex-column text-center">
-                        <button type="submit" class="btn button btn-primary mx-auto">Продължи</button>
-                        <a class="small" href="#">Забравена парола</a>
+                        <button type="submit" class="btn button btn-primary bg-dark mx-auto">Продължи</button>
                     </div>
                 </div>
             </form>
@@ -51,22 +56,25 @@
         $('#login_nav_link').addClass('active');
     </script>
     <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1059592494913916',
-      xfbml      : true,
-      version    : 'v13.0'
-    });
-    FB.AppEvents.logPageView();
-  };
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '1059592494913916',
+                xfbml: true,
+                version: 'v13.0'
+            });
+            FB.AppEvents.logPageView();
+        };
 
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
 
 {% endblock %}
