@@ -1,0 +1,136 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.5/af-2.3.7/b-2.2.2/date-1.1.2/r-2.2.9/datatables.min.css"/>
+
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.5/af-2.3.7/b-2.2.2/date-1.1.2/r-2.2.9/datatables.min.js"></script>
+<script>
+    /**
+ * Similar to the Date (dd/mm/YY) data sorting plug-in, this plug-in offers
+ * additional  flexibility with support for spaces between the values and
+ * either . or / notation for the separators.
+ *
+ * Please note that this plug-in is **deprecated*. The
+ * [datetime](//datatables.net/blog/2014-12-18) plug-in provides enhanced
+ * functionality and flexibility.
+ *
+ *  @name Date (dd . mm[ . YYYY])
+ *  @summary Sort dates in the format `dd/mm/YY[YY]` (with optional spaces)
+ *  @author [Robert Sedovšek](http://galjot.si/)
+ *  @deprecated
+ *
+ *  @example
+ *    $('#example').dataTable( {
+ *       columnDefs: [
+ *         { type: 'date-eu', targets: 0 }
+ *       ]
+ *    } );
+ */
+
+jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+	"date-eu-pre": function ( date ) {
+		date = date.replace(" ", "");
+
+		if ( ! date ) {
+			return 0;
+		}
+
+		var year;
+		var eu_date = date.split(/[\.\-\/]/);
+
+		/*year (optional)*/
+		if ( eu_date[2] ) {
+			year = eu_date[2];
+		}
+		else {
+			year = 0;
+		}
+
+		/*month*/
+		var month = eu_date[1];
+		if ( month.length == 1 ) {
+			month = 0+month;
+		}
+
+		/*day*/
+		var day = eu_date[0];
+		if ( day.length == 1 ) {
+			day = 0+day;
+		}
+
+		return (year + month + day) * 1;
+	},
+
+	"date-eu-asc": function ( a, b ) {
+		return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+	},
+
+	"date-eu-desc": function ( a, b ) {
+		return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+	}
+} );
+</script>
+
+<script src="{% static 'js/core/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.js' %}"></script>
+<script src="{% static 'js/core/popper.min.js' %}"></script>
+<script src="{% static  'js/core/bootstrap-material-design.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js" integrity="sha512-yDlE7vpGDP7o2eftkCiPZ+yuUyEcaBwoJoIhdXv71KZWugFqEphIS3PU60lEkFaz8RxaVsMpSvQxMBaKVwA5xg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'js/plugins/moment.min.js' %}"></script>
+<script src="{% static 'js/plugins/sweetalert2.js' %}"></script>
+<script src="{% static 'js/plugins/jquery.validate.min.js' %}"></script>
+<script src="{% static 'js/plugins/jquery.bootstrap-wizard.js' %}"></script>
+<script src="{% static 'js/plugins/bootstrap-selectpicker.js' %}"></script>
+<script src="{% static 'js/plugins/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/plugins/bootstrap-tagsinput.js' %}"></script>
+<script src="{% static 'js/plugins/jasny-bootstrap.min.js' %}"></script>
+<script src="{% static 'js/plugins/fullcalendar.min.js' %}"></script>
+<script src="{% static 'js/plugins/jquery-jvectormap.js' %}"></script>
+<script src="{% static 'js/plugins/nouislider.min.js' %}"></script>
+<script src="{% static 'js/plugins/arrive.min.js' %}"></script>
+<script src="{% static 'js/plugins/chartist.min.js' %}"></script>
+<script src="{% static 'js/plugins/bootstrap-notify.js' %}"></script>
+<script src="{% static 'js/material-dashboard.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/plugins/core.js' %}"></script>
+<script>
+    /**
+ * Copyright (c) 2007 Ariel Flesler - aflesler ○ gmail • com | https://github.com/flesler
+ * Licensed under MIT
+ * @author Ariel Flesler
+ * @version 2.1.3
+ */
+;(function(factory){'use strict';if(typeof define==='function'&&define.amd){define(['jquery'],factory)}else if(typeof module!=='undefined'&&module.exports){module.exports=factory(require('jquery'))}else{factory(jQuery)}})(function($){'use strict';var $scrollTo=$.scrollTo=function(target,duration,settings){return $(window).scrollTo(target,duration,settings)};$scrollTo.defaults={axis:'xy',duration:0,limit:true};function isWin(elem){return!elem.nodeName||$.inArray(elem.nodeName.toLowerCase(),['iframe','#document','html','body'])!==-1}function isFunction(obj){return typeof obj==='function'}$.fn.scrollTo=function(target,duration,settings){if(typeof duration==='object'){settings=duration;duration=0}if(typeof settings==='function'){settings={onAfter:settings}}if(target==='max'){target=9e9}settings=$.extend({},$scrollTo.defaults,settings);duration=duration||settings.duration;var queue=settings.queue&&settings.axis.length>1;if(queue){duration/=2}settings.offset=both(settings.offset);settings.over=both(settings.over);return this.each(function(){if(target===null){return}var win=isWin(this),elem=win?this.contentWindow||window:this,$elem=$(elem),targ=target,attr={},toff;switch(typeof targ){case 'number':case 'string':if(/^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(targ)){targ=both(targ);break}targ=win?$(targ):$(targ,elem);case 'object':if(targ.length===0){return}if(targ.is||targ.style){toff=(targ=$(targ)).offset()}}var offset=isFunction(settings.offset)&&settings.offset(elem,targ)||settings.offset;$.each(settings.axis.split(''),function(i,axis){var Pos=axis==='x'?'Left':'Top',pos=Pos.toLowerCase(),key='scroll'+Pos,prev=$elem[key](),max=$scrollTo.max(elem,axis);if(toff){attr[key]=toff[pos]+(win?0:prev-$elem.offset()[pos]);if(settings.margin){attr[key]-=parseInt(targ.css('margin'+Pos),10)||0;attr[key]-=parseInt(targ.css('border'+Pos+'Width'),10)||0}attr[key]+=offset[pos]||0;if(settings.over[pos]){attr[key]+=targ[axis==='x'?'width':'height']()*settings.over[pos]}}else{var val=targ[pos];attr[key]=val.slice&&val.slice(-1)==='%'?parseFloat(val)/100*max:val}if(settings.limit&&/^\d+$/.test(attr[key])){attr[key]=attr[key]<=0?0:Math.min(attr[key],max)}if(!i&&settings.axis.length>1){if(prev===attr[key]){attr={}}else if(queue){animate(settings.onAfterFirst);attr={}}}});animate(settings.onAfter);function animate(callback){var opts=$.extend({},settings,{queue:true,duration:duration,complete:callback&&function(){callback.call(elem,targ,settings)}});$elem.animate(attr,opts)}})};$scrollTo.max=function(elem,axis){var Dim=axis==='x'?'Width':'Height',scroll='scroll'+Dim;if(!isWin(elem)){return elem[scroll]-$(elem)[Dim.toLowerCase()]()}var size='client'+Dim,doc=elem.ownerDocument||elem.document,html=doc.documentElement,body=doc.body;return Math.max(html[scroll],body[scroll])-Math.min(html[size],body[size])};function both(val){return isFunction(val)||$.isPlainObject(val)?val:{top:val,left:val}}$.Tween.propHooks.scrollLeft=$.Tween.propHooks.scrollTop={get:function(t){return $(t.elem)[t.prop]()},set:function(t){var curr=this.get(t);if(t.options.interrupt&&t._last&&t._last!==curr){return $(t.elem).stop()}var next=Math.round(t.now);if(curr!==next){$(t.elem)[t.prop](next);t._last=this.get(t)}}};return $scrollTo});
+
+
+</script>
+ <script src="https://cdn.jsdelivr.net/npm/jquery.cookie-consent/dist/jquery.cookie-consent.min.js"></script>
+    <style>
+        #cookieConsent {
+            color: white;
+            background-color: gray;
+            text-align: center;
+            display: none;
+            position: fixed;
+            z-index: 65000;
+            bottom: 0px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        #cookieConsent button.cookieAccept {
+            background: #090;
+            color: white;
+            border: none;
+            border-radius: 0.2em;
+            margin: 0.5em;
+            padding: 0.2em 0.5em 0.2em 0.5em;
+        }
+    </style>
+    <div id="cookieConsent">Този сайт използва бисквитки.
+        <button class="cookieAccept">Разбрах</button>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#cookieConsent').cookieConsent({});
+        });
+    </script>
