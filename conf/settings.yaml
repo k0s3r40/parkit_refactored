@@ -1,0 +1,17 @@
+default:
+  DEBUG: True
+  DATABASES:
+    default:
+      ENGINE: 'django.contrib.gis.db.backends.postgis'
+      NAME: 'parkit'
+      USER: 'parkit'
+      PASSWORD: '123'
+      HOST: 'localhost'
+      PORT: '5432'
+
+development:
+  DEBUG: True
+
+
+staging:
+  DEBUG: False
