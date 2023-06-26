@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 django = "*"
+numpy = "*"
+pycurl = "*"
 
 [dev-packages]
 

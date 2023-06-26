@@ -68,6 +68,10 @@ class EditCameraView(View):
                 camera.p_mask =data.get('polygons', [])
             else:
                 camera.v_mask = data.get('polygons', [])
+            camera.height = data.get('height')
+            camera.width = data.get('width')
+            print(camera.height)
+            print(camera.width)
             camera.save()
             messages.success(request, 'Маската е добавена успешно')
         return render(request, self.template_name, context=context)

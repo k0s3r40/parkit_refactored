@@ -309,6 +309,8 @@
         var requestBody = JSON.stringify({
             polygons: allPoints,
             csrfmiddlewaretoken: $('[name="csrfmiddlewaretoken"]').val(),
+            width:canvas.width,
+            height:canvas.height
         });
 
         $.ajax({
