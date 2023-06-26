@@ -120,7 +120,7 @@
 
             </nav>
             {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                   <div class="alert alert-{% if message.tags == 'error' %}warning{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
                     {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -150,11 +150,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="cameraName">Географска ширина</label>
-                                    <input type="text" class="form-control" name="lat">
+                                    <input type="text" class="form-control" name="latitude">
                                 </div>
                                 <div class="form-group">
                                     <label for="cameraName">Географска дължина</label>
-                                    <input type="text" class="form-control" name="long">
+                                    <input type="text" class="form-control" name="longitude">
                                 </div>
                                 <div class="form-group">
                                     <label for="cameraName">Интернет адрес</label>
@@ -163,8 +163,8 @@
                                 <div class="form-group">
                                     <label for="cameraName">Зона</label>
                                     <select class="form-control" name="zone">
-                                        <option value="green">Синя</option>
-                                        <option value="blue">Зелена</option>
+                                        <option value="green">Зелена</option>
+                                        <option value="blue">Синя</option>
                                     </select>
                                 </div>
                             </form>
@@ -192,15 +192,14 @@
 
                 <!-- Content Row -->
                 <div class="row">
-
-                    <!-- Earnings (Monthly) Card Example -->
+                    {%  for camera in cameras %}
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Име на камера
+                                            {{ camera.name }} ({% if camera.zone == 'green' %}Зелена зона{% else %}Синя зона{% endif %})
                                         </div>
                                     </div>
                                     <div class="col-auto">
@@ -208,13 +207,13 @@
                                     </div>
                                 </div>
                                 <div class="camera-feed iframe-container row no-gutters align-items-center">
-                                    <img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%);" src="http://77.103.172.17:8080/mjpg/video.mjpg" width="auto" height="200px">
+                                    <img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%);" src="{{ camera.url }}" width="auto" height="200px">
                                 </div>
 
                             </div>
                         </div>
                     </div>
-
+                    {% endfor %}
                 </div>
 
 
