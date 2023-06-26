@@ -3,13 +3,13 @@ import urllib.request
 import numpy as np
 
 from cameras.models import Camera
-
+from .yolo_parking import get_detected_objects
 
 # Set the URL of the camera feed
 camera = Camera.objects.last()
 
-def get_camera_frame(camera):
 
+def get_camera_frame(camera):
     camera_url = camera.url
 
     # Open the video stream
@@ -43,11 +43,8 @@ def get_camera_frame(camera):
             # Decode the JPEG image using OpenCV
             frame = cv2.imdecode(np.frombuffer(jpeg_data, dtype=np.uint8), cv2.IMREAD_COLOR)
 
-            # Save the first frame as an image
-            if not first_frame_captured:
-                cv2.imwrite("/tmp/ff.png", frame)
-                print("First frame captured and saved.")
-                first_frame_captured = True
+            # Pass the frame to the show_camera_with_mask function
+
 
             # Break the loop after capturing the first frame
             break
@@ -56,44 +53,44 @@ def get_camera_frame(camera):
     stream.close()
     cv2.destroyAllWindows()
 
+    show_camera_with_mask(camera, frame, camera.p_mask)
 
-def show_camera_with_mask(camera):
-    # Input polygon coordinates
-    polygon = camera.p_mask[0]
 
-    # Load the image
-    image_path = '/tmp/ff.png'
-    image = cv2.imread(image_path)
-
-    # Resize the image to match the camera's height while maintaining the aspect ratio
+def show_camera_with_mask(camera, frame, polygons):
+    # Resize the frame to match the camera's height while maintaining the aspect ratio
     desired_height = int(camera.height)
-    aspect_ratio = desired_height / image.shape[0]
-    desired_width = int(image.shape[1] * aspect_ratio)
-    resized_image = cv2.resize(image, (desired_width, desired_height))
+    aspect_ratio = desired_height / frame.shape[0]
+    desired_width = int(frame.shape[1] * aspect_ratio)
+    resized_frame = cv2.resize(frame, (desired_width, desired_height))
 
     # Create a blank canvas with the same size as the camera
     canvas = np.zeros((int(camera.height), int(camera.width), 3), dtype=np.uint8)
 
-    # Calculate the position to center the resized image on the canvas
-    x_offset = (int(camera.width) - resized_image.shape[1]) // 2
+    # Calculate the position to center the resized frame on the canvas
+    x_offset = (int(camera.width) - resized_frame.shape[1]) // 2
     y_offset = 0  # Assuming the image should be aligned to the top
 
-    # Place the resized image on the canvas
-    canvas[y_offset:y_offset + resized_image.shape[0], x_offset:x_offset + resized_image.shape[1]] = resized_image
+    # Place the resized frame on the canvas
+    canvas[y_offset:y_offset + resized_frame.shape[0], x_offset:x_offset + resized_frame.shape[1]] = resized_frame
 
     # Create a black mask image
     mask = np.zeros_like(canvas)
 
-    # Convert the polygon coordinates to NumPy array
-    polygon_pts = np.array([[point['x'], point['y']] for point in polygon], dtype=np.int32)
-
-    # Draw the polygon on the mask
-    cv2.fillPoly(mask, [polygon_pts], (255, 255, 255))
+    # Draw each polygon on the mask
+    for polygon in polygons:
+        # Convert the polygon coordinates to NumPy array
+        polygon_pts = np.array([[point['x'], point['y']] for point in polygon], dtype=np.int32)
+        # Draw the polygon on the mask
+        cv2.fillPoly(mask, [polygon_pts], (255, 255, 255))
 
     # Apply the mask to the canvas
     result = cv2.bitwise_and(canvas, mask)
-
+    get_detected_objects(result)
     # Display the result
     cv2.imshow('Image with Polygon', result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+
+# Call the get_camera_frame function to start processing the camera feed
+get_camera_frame(camera)
