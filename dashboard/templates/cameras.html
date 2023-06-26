@@ -119,7 +119,63 @@
                 </ul>
 
             </nav>
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
             <!-- End of Topbar -->
+            <div class="modal" id="myModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Добавяне на камера</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/cameras/add/" id="AddCameraModal" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="cameraName">Име на камера</label>
+                                    <input type="text" class="form-control" name="name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cameraName">Адрес</label>
+                                    <input type="text" class="form-control" name="address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cameraName">Географска ширина</label>
+                                    <input type="text" class="form-control" name="lat">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cameraName">Географска дължина</label>
+                                    <input type="text" class="form-control" name="long">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cameraName">Интернет адрес</label>
+                                    <input type="text" class="form-control" name="url">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cameraName">Зона</label>
+                                    <select class="form-control" name="zone">
+                                        <option value="green">Синя</option>
+                                        <option value="blue">Зелена</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отказ</button>
+                            <button type="submit" class="btn btn-primary" form="AddCameraModal">Запази</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Begin Page Content -->
             <div class="container-fluid">
@@ -128,8 +184,9 @@
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Контролен панел камери</h1>
 
-                    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                            class="fas fa-plus fa-sm text-white-50"></i> Добави камера</a>
+                    <a href="#" id="add-camera-btn" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                        <i class="fas fa-plus fa-sm text-white-50"></i> Добави камера
+                    </a>
 
                 </div>
 
@@ -218,6 +275,31 @@
 <!-- Custom scripts for all pages-->
 <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 
+<script>
+    $(document).ready(function () {
+        var addButton = $('#add-camera-btn');
+        var saveButton = $('#saveBtn');
+        var cameraNameInput = $('#cameraName');
+
+        addButton.on('click', function (e) {
+            e.preventDefault();
+            $('#myModal').modal('show');
+        });
+
+        saveButton.on('click', function () {
+            var cameraName = cameraNameInput.val();
+            // Perform any desired action with the camera name (e.g., save it to a database)
+            console.log('Camera Name:', cameraName);
+            $('#myModal').modal('hide');
+        });
+    });
+    $(document).ready(function () {
+        // Automatically close the success message after 2 seconds
+        setTimeout(function () {
+            $(".alert-dismissible").alert("close");
+        }, 2000);
+    });
+</script>
 <!-- Page level plugins -->
 
 </body>
