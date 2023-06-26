@@ -22,6 +22,12 @@
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
 
     <style>
+        .canvas-container {
+            position: absolute !important;
+            z-index: 9999;
+            border: 1px solid black;
+        }
+
         .responsive-iframe {
             position: absolute;
             top: 0;
@@ -120,7 +126,7 @@
 
             </nav>
             {% for message in messages %}
-                   <div class="alert alert-{% if message.tags == 'error' %}warning{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                <div class="alert alert-{% if message.tags == 'error' %}warning{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
                     {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -182,18 +188,20 @@
 
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Контролен панел камери</h1>
+                    <h1 class="h3 mb-0 text-gray-800">Добавяне/Промяна на маска {{ mask_type }} на камера {{ camera.name }} ({% if camera.zone == 'green' %}Зелена зона{% else %}Синя зона{% endif %})</h1>
 
-                    <a href="#" id="add-camera-btn" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                        <i class="fas fa-plus fa-sm text-white-50"></i> Добави камера
-                    </a>
+
+                    <button id="poly" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                        <i class="fas fa-plus fa-sm text-white-50"></i> Добавяне на полигон
+                    </button>
+                    {#                    <button id="poly">Finish Polygon</button>#}
 
                 </div>
+                {#                <canvas id="canvas-tools"></canvas>#}
 
                 <!-- Content Row -->
                 <div class="row">
-                    {%  for camera in cameras %}
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-12  mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
@@ -202,18 +210,14 @@
                                             {{ camera.name }} ({% if camera.zone == 'green' %}Зелена зона{% else %}Синя зона{% endif %})
                                         </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <a href="{% url 'edit-camera' camera.uid  %}"><i class="fas fa-camera fa-2x text-gray-300"></i></a>
-                                    </div>
                                 </div>
                                 <div class="camera-feed iframe-container row no-gutters align-items-center">
-                                    <img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%);" src="{{ camera.url }}" width="auto" height="200px">
+                                    <img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%);" src="{{ camera.url }}" width="auto" height="800px">
                                 </div>
 
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
 
 
@@ -222,6 +226,7 @@
 
         </div>
         <!-- End of Main Content -->
+        <button id="SaveMaskBtn" class="btn btn-primary mx-5">Запази</button>
 
         <!-- Footer -->
         <footer class="sticky-footer bg-white">
@@ -274,33 +279,173 @@
 <!-- Custom scripts for all pages-->
 <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 
+{#{% csrf_token %}#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.js" integrity="sha512-hOJ0mwaJavqi11j0XoBN1PtOJ3ykPdP6lp9n29WVVVVZxgx9LO7kMwyyhaznGJ+kbZrDN1jFZMt2G9bxkOHWFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    $(document).ready(function () {
-        var addButton = $('#add-camera-btn');
-        var saveButton = $('#saveBtn');
-        var cameraNameInput = $('#cameraName');
 
-        addButton.on('click', function (e) {
-            e.preventDefault();
-            $('#myModal').modal('show');
+    var divElement = document.querySelector('.iframe-container');
+
+    // Create a <canvas> element and append it to the <div> element
+    var canvas = document.createElement('canvas');
+    canvas.width = divElement.offsetWidth;
+    canvas.height = divElement.offsetHeight;
+    canvas.id = 'canvas-tools';
+    divElement.appendChild(canvas);
+
+
+    var roof = null;
+    var roofPoints = [];
+    var lines = [];
+    var lineCounter = 0;
+    var drawingObject = {};
+    drawingObject.type = "";
+    drawingObject.background = "";
+    drawingObject.border = "";
+    var allPoints = []
+    var saveBtn = document.querySelector('#SaveMaskBtn');
+
+    saveBtn.addEventListener('click', function () {
+        var url = window.location.href;
+        var requestBody = JSON.stringify({
+            polygons: allPoints,
+            csrfmiddlewaretoken: $('[name="csrfmiddlewaretoken"]').val(),
         });
 
-        saveButton.on('click', function () {
-            var cameraName = cameraNameInput.val();
-            // Perform any desired action with the camera name (e.g., save it to a database)
-            console.log('Camera Name:', cameraName);
-            $('#myModal').modal('hide');
+        $.ajax({
+            url: url,
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            data: requestBody,
+            success: function () {
+                console.log('Polygon data saved successfully!');
+            },
+            error: function () {
+                console.log('Failed to save polygon data.');
+            }
         });
     });
-    $(document).ready(function () {
-        // Automatically close the success message after 2 seconds
-        setTimeout(function () {
-            $(".alert-dismissible").alert("close");
-        }, 2000);
+
+
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    document.getElementById("poly").addEventListener("click", function () {
+        if (drawingObject.type == "roof") {
+            drawingObject.type = "";
+            lines.forEach(function (value, index, ar) {
+                canvas.remove(value);
+            });
+            roof = makeRoof(roofPoints);
+            canvas.add(roof);
+            canvas.renderAll();
+        } else {
+            drawingObject.type = "roof"; // roof type
+        }
     });
+
+    var canvas = new fabric.Canvas('canvas-tools');
+    var x = 0;
+    var y = 0;
+
+    fabric.util.addListener(window, 'dblclick', function () {
+        drawingObject.type = "";
+        lines.forEach(function (value, index, ar) {
+            canvas.remove(value);
+        });
+        roof = makeRoof(roofPoints);
+        canvas.add(roof);
+        canvas.renderAll();
+
+        // Clear arrays
+        roofPoints = [];
+        lines = [];
+        lineCounter = 0;
+    });
+
+    canvas.on('mouse:down', function (options) {
+        if (drawingObject.type == "roof") {
+            canvas.selection = false;
+            setStartingPoint(options); // set x, y
+            roofPoints.push(new Point(x, y));
+            var points = [x, y, x, y];
+            var line = new fabric.Line(points, {
+                strokeWidth: 3,
+                selectable: false,
+                stroke: 'red'
+            });
+            line.set({
+                x1: x,
+                y1: y,
+                x2: x,
+                y2: y
+            });
+            lines.push(line);
+            canvas.add(line);
+            lineCounter++;
+            canvas.on('mouse:up', function (options) {
+                canvas.selection = true;
+            });
+        }
+    });
+
+
+    canvas.on('mouse:move', function (options) {
+        if (lines[0] !== null && lines[0] !== undefined && drawingObject.type == "roof") {
+            setStartingPoint(options);
+            lines[lineCounter - 1].set({
+                x2: x,
+                y2: y
+            });
+            canvas.renderAll();
+        }
+    });
+
+    function setStartingPoint(options) {
+        var canvasElement = canvas.getElement();
+        var rect = canvasElement.getBoundingClientRect();
+        x = options.e.clientX - rect.left;
+        y = options.e.clientY - rect.top;
+    }
+
+    function makeRoof(roofPoints) {
+        var left = findLeftPaddingForRoof(roofPoints);
+        var top = findTopPaddingForRoof(roofPoints);
+        roofPoints.push(new Point(roofPoints[0].x, roofPoints[0].y));
+        {#console.log(roofPoints)#}
+        allPoints.push(roofPoints)
+        var roof = new fabric.Polyline(roofPoints, {
+            fill: 'rgba(0, 0, 0, 0.3)',
+            stroke: '#58c'
+        });
+        roof.set({
+            left: left,
+            top: top,
+        });
+        return roof;
+    }
+
+    function findTopPaddingForRoof(roofPoints) {
+        var result = 999999;
+        for (var f = 0; f < lineCounter; f++) {
+            if (roofPoints[f].y < result) {
+                result = roofPoints[f].y;
+            }
+        }
+        return Math.abs(result);
+    }
+
+    function findLeftPaddingForRoof(roofPoints) {
+        var result = 999999;
+        for (var i = 0; i < lineCounter; i++) {
+            if (roofPoints[i].x < result) {
+                result = roofPoints[i].x;
+            }
+        }
+        return Math.abs(result);
+    }
 </script>
-<!-- Page level plugins -->
-
 </body>
 
 </html>

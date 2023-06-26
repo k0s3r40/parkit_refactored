@@ -120,7 +120,7 @@
 
             </nav>
             {% for message in messages %}
-                   <div class="alert alert-{% if message.tags == 'error' %}warning{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                <div class="alert alert-{% if message.tags == 'error' %}warning{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
                     {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -182,7 +182,8 @@
 
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">Контролен панел камери</h1>
+                    <h1 class="h3 mb-0 text-gray-800">Промяна на камера {{ camera.name }} ({% if camera.zone == 'green' %}Зелена зона{% else %}Синя зона{% endif %})</h1>
+
 
                     <a href="#" id="add-camera-btn" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                         <i class="fas fa-plus fa-sm text-white-50"></i> Добави камера
@@ -192,7 +193,6 @@
 
                 <!-- Content Row -->
                 <div class="row">
-                    {%  for camera in cameras %}
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
@@ -202,8 +202,25 @@
                                             {{ camera.name }} ({% if camera.zone == 'green' %}Зелена зона{% else %}Синя зона{% endif %})
                                         </div>
                                     </div>
+                                </div>
+                                <div class="camera-feed iframe-container row no-gutters align-items-center">
+                                    <img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%);" src="{{ camera.url }}" width="auto" height="200px">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Маска за паркинг
+                                        </div>
+                                    </div>
                                     <div class="col-auto">
-                                        <a href="{% url 'edit-camera' camera.uid  %}"><i class="fas fa-camera fa-2x text-gray-300"></i></a>
+                                        <a href="{% url 'add-mask' camera.uid 'parking' %}"><i class="fas fa-camera fa-2x text-gray-300"></i></a>
                                     </div>
                                 </div>
                                 <div class="camera-feed iframe-container row no-gutters align-items-center">
@@ -213,7 +230,26 @@
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Маска за нарушители
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="{% url 'add-mask' camera.uid 'intruders' %}"><i class="fas fa-camera fa-2x text-gray-300"></i></a>
+                                    </div>
+                                </div>
+                                <div class="camera-feed iframe-container row no-gutters align-items-center">
+                                    <img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%);" src="{{ camera.url }}" width="auto" height="200px">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
