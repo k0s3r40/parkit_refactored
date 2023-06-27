@@ -22,6 +22,7 @@ class Camera(models.Model):
     v_mask = models.JSONField(blank=True, null=True)
     max_cap = models.PositiveIntegerField(default=0)
     current_cap = models.IntegerField(default=0)
+    intruders_count = models.IntegerField(default=0)
     zone = models.CharField(choices=Zone.choices, max_length=244)
     width = models.CharField(blank=True, null=True, default=200)
     height = models.CharField(blank=True, null=True, default=400)

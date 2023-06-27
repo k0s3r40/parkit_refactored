@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import urllib.request
 import numpy as np
@@ -10,7 +12,7 @@ from .yolo_parking import get_detected_objects
 # Set the URL of the camera feed
 
 
-def get_camera_frame(camera):
+def get_camera_frame(camera, intruders=False):
     camera_url = camera.url
 
     # Open the video stream
@@ -53,11 +55,12 @@ def get_camera_frame(camera):
     stream.close()
     cv2.destroyAllWindows()
 
-    show_camera_with_mask(camera, frame, camera.p_mask)
+    show_camera_with_mask(camera, frame, intruders)
 
 
-def show_camera_with_mask(camera, frame, polygons):
+def show_camera_with_mask(camera, frame, intruders):
     # Resize the frame to match the camera's height while maintaining the aspect ratio
+    polygons = camera.p_mask if intruders is False else camera.v_mask
     desired_height = int(camera.height)
     aspect_ratio = desired_height / frame.shape[0]
     desired_width = int(frame.shape[1] * aspect_ratio)
@@ -85,17 +88,30 @@ def show_camera_with_mask(camera, frame, polygons):
 
     # Apply the mask to the canvas
     result = cv2.bitwise_and(canvas, mask)
+    # cv2.imshow(f'Image with Polygon {intruders}', result)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     detections = detect(image=result)
-    camera.current_cap = sum([1 for i in detections if i.get('class') in ['car', 'bus', 'truck']])
-    if camera.current_cap > camera.max_cap:
-        camera.max_cap = camera.current_cap
+    total_vehicles = sum([1 for i in detections if i.get('class') in ['car', 'bus', 'truck']])
+    print(intruders, total_vehicles)
+    if intruders is False:
+        camera.current_cap = total_vehicles
+        if camera.current_cap > camera.max_cap:
+            camera.max_cap = camera.current_cap
+    else:
+        camera.intruders_count = total_vehicles
     camera.save()
     print('Done!')
 
 
 def get_all_cameras():
-    for camera in Camera.objects.all():
-        try:
-            get_camera_frame(camera)
-        except Exception as e:
-            print('error processing camera: %s' % camera.name)
+    for i in range(10):
+        for camera in Camera.objects.all():
+            # print(camera.name)
+            # continue
+            try:
+                get_camera_frame(camera)
+                get_camera_frame(camera, intruders=True)
+            except Exception as e:
+                print('error processing camera: %s %s' % (camera.name, e))
+        time.sleep(2)

@@ -18,6 +18,7 @@ class HomeView(View):
             context['dashboard_data'] = {
                 'total_parked': sum([i.current_cap for i in Camera.objects.all()]),
                 'max_cap': sum([i.max_cap for i in Camera.objects.all()]),
+                'intruders': sum([i.intruders_count for i in Camera.objects.all()]),
 
             }
             context['dashboard_data']['taken_percentage'] = round((context['dashboard_data']['total_parked'] / context['dashboard_data']['max_cap']) * 100, 2)
@@ -32,7 +33,16 @@ class HomeView(View):
 
             context['dashboard_data']['green_ratio'] = green_ratio
             context['dashboard_data']['blue_ratio'] = blue_ratio
-            print(green_ratio, blue_ratio)
+
+            green_intruders = sum([i.intruders_count for i in Camera.objects.filter(zone='green')])
+            blue_intruders = sum([i.intruders_count for i in Camera.objects.filter(zone='blue')])
+            total_intruders = green_intruders + blue_intruders
+
+            green_ratio_int = round((green_intruders / total_intruders) * 100, 2)
+            blue_ratio_int = round((blue_intruders / total_intruders) * 100, 2)
+
+            context['dashboard_data']['green_ratio_int'] = green_ratio_int
+            context['dashboard_data']['blue_ratio_int'] = blue_ratio_int
             if data == "cameras":
                 self.template_name = "cameras.html"
                 context['cameras'] = Camera.objects.all()

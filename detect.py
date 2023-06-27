@@ -38,7 +38,7 @@ def add_mask(background):
     # display the image
     return background
 
-def detect(image, weights='/home/slavov/PycharmProjects/parkit_refactored/yolov7x.pt', img_size=640, conf_thres=0.15, iou_thres=0.45, device='', save_img=False):
+def detect(image, weights='/home/slavov/PycharmProjects/parkit_refactored/yolov7x.pt', img_size=640, conf_thres=0.15, iou_thres=0.25, device='', save_img=False):
 
     # Initialize
     set_logging()

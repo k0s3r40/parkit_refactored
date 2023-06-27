@@ -161,7 +161,7 @@
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Общо нарушители
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">2</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ dashboard_data.intruders }}</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-ban fa-2x text-gray-300"></i>
@@ -450,7 +450,7 @@
         data: {
             labels: ["Синя", "Зелена"],
             datasets: [{
-                data: [75, 25],
+            data: [{{ dashboard_data.blue_ratio_int }}, {{ dashboard_data.green_ratio_int }}],
                 backgroundColor: ['#4e73df', '#1cc88a'],
                 hoverBackgroundColor: ['#2e59d9', '#17a673'],
                 hoverBorderColor: "rgba(234, 236, 244, 1)",
