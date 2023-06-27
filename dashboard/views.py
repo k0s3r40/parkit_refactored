@@ -15,9 +15,16 @@ class HomeView(View):
     def get(self, request, data=None, *args, **kwargs):
         if request.user.is_authenticated:
             context = dict(user=request.user)
+            context['dashboard_data'] = {
+                'total_parked': sum([i.current_cap for i in Camera.objects.all()]),
+                'max_cap': sum([i.max_cap for i in Camera.objects.all()])
+            }
+            context['dashboard_data']['taken_percentage'] = round((context['dashboard_data']['total_parked'] / context['dashboard_data']['max_cap']) * 100, 2)
+
             if data == "cameras":
                 self.template_name = "cameras.html"
                 context['cameras'] = Camera.objects.all()
+
             return render(request, self.template_name, context=context)
         return render(request, 'login-form.html')
 
@@ -37,13 +44,15 @@ class AddCameraView(View):
 
         return HttpResponseRedirect('/cameras/')
 
+
 from django.utils.decorators import method_decorator
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class EditCameraView(View):
     template_name = 'edit_camera.html'
 
-    def get(self, request, camera_uid, mask_type=False,  *args, **kwargs):
+    def get(self, request, camera_uid, mask_type=False, *args, **kwargs):
         context = {
             'camera': Camera.objects.get(uid=camera_uid)
         }
@@ -54,9 +63,8 @@ class EditCameraView(View):
 
         return render(request, self.template_name, context=context)
 
-
     def post(self, request, camera_uid, mask_type=False, *args, **kwargs):
-        camera =  Camera.objects.get(uid=camera_uid)
+        camera = Camera.objects.get(uid=camera_uid)
         context = {
             'camera': camera
         }
@@ -65,7 +73,7 @@ class EditCameraView(View):
             self.template_name = 'camera_add_mask.html'
             context['mask_type'] = 'Паркинг' if mask_type == 'parking' else 'Нарушители'
             if mask_type == 'parking':
-                camera.p_mask =data.get('polygons', [])
+                camera.p_mask = data.get('polygons', [])
             else:
                 camera.v_mask = data.get('polygons', [])
             camera.height = data.get('height')

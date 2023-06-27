@@ -142,7 +142,7 @@
                                             Общо паркирани автомобили
                                         </div>
                                         {#                                        Add data here from the backend#}
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">123</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ dashboard_data.total_parked }}</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-car fa-2x text-gray-300"></i>
@@ -181,7 +181,7 @@
                                         </div>
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">23.5%</div>
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ dashboard_data.taken_percentage }}%</div>
                                             </div>
                                             <div class="col">
                                                 <div class="progress progress-sm mr-2">
