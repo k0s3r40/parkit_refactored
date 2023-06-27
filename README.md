@@ -1,9 +1,12 @@
-# parkit_refactored
+# yolo7-stream-count
+# Create vitrualenv & install requirements
+    virtualenv -p python3 .
+    . bin/activate
+    pip install -r requirements.txt
 
-Create database
-    
-    CREATE USER parkit WITH password '123';
-    CREATE DATABASE parkit;
-    GRANT ALL PRIVILEGES ON DATABASE parkit TO parkit;
-    \c parkit
-    CREATE EXTENSION postgis;
+
+# Download weights
+    wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7x.pt
+
+# Run the test 
+    ./test.sh

@@ -28,6 +28,7 @@ def attempt_download(file, repo='WongKinYiu/yolov7'):
         except:  # fallback plan
             assets = ['yolov7.pt', 'yolov7-tiny.pt', 'yolov7x.pt', 'yolov7-d6.pt', 'yolov7-e6.pt', 
                       'yolov7-e6e.pt', 'yolov7-w6.pt']
+            return
             tag = subprocess.check_output('git tag', shell=True).decode().split()[-1]
 
         name = file.name

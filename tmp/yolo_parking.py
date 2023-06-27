@@ -16,8 +16,8 @@ def get_output_layers(net):
 
 
 def get_detected_objects(frame,
-                         config_path='/home/slavov/PycharmProjects/parkit_refactored/yolo/yolo3.cfg',
-                         weights_path='/home/slavov/PycharmProjects/parkit_refactored/yolo/object-detection-opencv/yolov3.weights',
+                         config_path='/home/slavov/PycharmProjects/parkit_refactored/yolo3.cfg',
+                         weights_path='/home/slavov/PycharmProjects/parkit_refactored/object-detection-opencv/yolov3.weights',
                          classes_path='/home/slavov/PycharmProjects/parkit_refactored/yolo/yolov3.txt'):
     Width = frame.shape[1]
     Height = frame.shape[0]

@@ -325,7 +325,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
 
             _, frame = cap.read()  # guarantee first frame
             frame = cv2.resize(frame, (960, 541))
-            # frame = add_mask(frame)
+            frame = add_mask(frame)
             self.imgs[i] = frame
             thread = Thread(target=self.update, args=([i, cap]), daemon=True)
             print(f' success ({w}x{h} at {self.fps:.2f} FPS).')
@@ -348,7 +348,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
             if n == 4:  # read every 4th frame
                 success, frame = cap.retrieve()
                 frame = cv2.resize(frame, (960, 541))
-                # frame = add_mask(frame)
+                frame = add_mask(frame)
 
                 self.imgs[index] = frame if success else self.imgs[index] * 0
                 n = 0

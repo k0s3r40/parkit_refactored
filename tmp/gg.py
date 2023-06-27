@@ -3,10 +3,11 @@ import urllib.request
 import numpy as np
 
 from cameras.models import Camera
+from detect import detect
 from .yolo_parking import get_detected_objects
 
+
 # Set the URL of the camera feed
-camera = Camera.objects.last()
 
 
 def get_camera_frame(camera):
@@ -38,13 +39,12 @@ def get_camera_frame(camera):
         b = buffer.find(b'\xff\xd9')
         if a != -1 and b != -1:
             # Extract the JPEG image from the buffer
-            jpeg_data = buffer[a:b+2]
+            jpeg_data = buffer[a:b + 2]
 
             # Decode the JPEG image using OpenCV
             frame = cv2.imdecode(np.frombuffer(jpeg_data, dtype=np.uint8), cv2.IMREAD_COLOR)
 
             # Pass the frame to the show_camera_with_mask function
-
 
             # Break the loop after capturing the first frame
             break
@@ -85,12 +85,17 @@ def show_camera_with_mask(camera, frame, polygons):
 
     # Apply the mask to the canvas
     result = cv2.bitwise_and(canvas, mask)
-    get_detected_objects(result)
-    # Display the result
-    cv2.imshow('Image with Polygon', result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    detections = detect(image=result)
+    camera.current_cap = sum([1 for i in detections if i.get('class') in ['car', 'bus', 'truck']])
+    if camera.current_cap > camera.max_cap:
+        camera.max_cap = camera.current_cap
+    camera.save()
+    print('Done!')
 
 
-# Call the get_camera_frame function to start processing the camera feed
-get_camera_frame(camera)
+def get_all_cameras():
+    for camera in Camera.objects.all():
+        try:
+            get_camera_frame(camera)
+        except Exception as e:
+            print('error processing camera: %s' % camera.name)
