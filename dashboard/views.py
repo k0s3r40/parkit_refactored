@@ -17,10 +17,22 @@ class HomeView(View):
             context = dict(user=request.user)
             context['dashboard_data'] = {
                 'total_parked': sum([i.current_cap for i in Camera.objects.all()]),
-                'max_cap': sum([i.max_cap for i in Camera.objects.all()])
+                'max_cap': sum([i.max_cap for i in Camera.objects.all()]),
+
             }
             context['dashboard_data']['taken_percentage'] = round((context['dashboard_data']['total_parked'] / context['dashboard_data']['max_cap']) * 100, 2)
 
+            green_parked = sum([i.current_cap for i in Camera.objects.filter(zone='green')])
+            blue_parked = sum([i.current_cap for i in Camera.objects.filter(zone='blue')])
+
+            total_parked = green_parked + blue_parked
+
+            green_ratio = round((green_parked / total_parked) * 100, 2)
+            blue_ratio = round((blue_parked / total_parked) * 100, 2)
+
+            context['dashboard_data']['green_ratio'] = green_ratio
+            context['dashboard_data']['blue_ratio'] = blue_ratio
+            print(green_ratio, blue_ratio)
             if data == "cameras":
                 self.template_name = "cameras.html"
                 context['cameras'] = Camera.objects.all()
